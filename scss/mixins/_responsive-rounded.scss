@@ -1,0 +1,52 @@
+@mixin responsive-rounded() {
+  // Define the types and map for border-radius sizes
+  $types: ("", "top", "end", "bottom", "start", "circle", "pill");
+  $size-map: (
+    0: 0,
+    1: $border-radius-sm,
+    2: $border-radius,
+    3: $border-radius-lg,
+    4: $border-radius-xl,
+    5: $border-radius-xxl
+  );
+
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+
+    @each $type in $types {
+      @each $size, $radius in $size-map {
+
+        // Construct class name considering type, breakpoint infix, and size
+        $class-name: if($type == "", ".rounded", ".rounded-#{$type}") + "#{if($infix != '', '#{$infix}', '')}-#{$size}";
+
+        @include media-breakpoint-up($breakpoint) {
+          @if $type == "circle" {
+            #{$class-name} { border-radius: 50% !important; }
+          } @else if $type == "pill" {
+            #{$class-name} { border-radius: $border-radius-pill !important; }
+          } @else {
+            #{$class-name} {
+              @if $type == "top" {
+                border-top-left-radius: $radius !important;
+                border-top-right-radius: $radius !important;
+              } @else if $type == "end" {
+                border-top-right-radius: $radius !important;
+                border-bottom-right-radius: $radius !important;
+              } @else if $type == "bottom" {
+                border-bottom-right-radius: $radius !important;
+                border-bottom-left-radius: $radius !important;
+              } @else if $type == "start" {
+                border-top-left-radius: $radius !important;
+                border-bottom-left-radius: $radius !important;
+              } @else { // Default rounded type
+                border-radius: $radius !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@include responsive-rounded();
